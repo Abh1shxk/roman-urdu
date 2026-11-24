@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Roman Urdu</title>
+  <meta name="description" content="Learn Urdu written in English letters (Roman Urdu): vocabulary, flashcards, quizzes and a pronunciation guide. Works offline.">
+  <meta name="theme-color" content="#0d6b5c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d6b5c'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' text-anchor='middle' fill='white'%3ERU%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#home" aria-label="Roman Urdu home">
+        <span class="brand-mark" aria-hidden="true">RU</span>
+        <span class="brand-name">Roman Urdu<small>Urdu in English letters</small></span>
+      </a>
+      <span class="stat-chip" title="Day streak"><span aria-hidden="true">🔥</span><span id="hdr-streak">0</span><span class="lbl">day streak</span></span>
+      <span class="stat-chip" title="Words learned"><span aria-hidden="true">✅</span><span id="hdr-learned">0</span><span class="lbl">learned</span></span>
+      <button class="icon-btn" id="theme-btn" type="button" title="Switch light / dark theme" aria-label="Switch light or dark theme">🌓</button>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab" data-view="home" type="button"><span class="ti" aria-hidden="true">🏠</span>Home</button>
+      <button class="tab" data-view="learn" type="button"><span class="ti" aria-hidden="true">📖</span>Words</button>
+      <button class="tab" data-view="cards" type="button"><span class="ti" aria-hidden="true">🃏</span>Flashcards</button>
+      <button class="tab" data-view="quiz" type="button"><span class="ti" aria-hidden="true">🎯</span>Quiz</button>
+      <button class="tab" data-view="guide" type="button"><span class="ti" aria-hidden="true">🔤</span>Sounds</button>
+      <button class="tab" data-view="progress" type="button"><span class="ti" aria-hidden="true">📈</span>Progress</button>
+    </nav>
+  </header>
+
+  <main id="view" tabindex="-1"></main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data-1.js"></script>
+  <script src="js/data-2.js"></script>
+  <script src="js/data-3.js"></script>
+  <script src="js/data-4.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/view-home.js"></script>
+  <script src="js/view-learn.js"></script>
+  <script src="js/view-cards.js"></script>
+  <script src="js/view-quiz.js"></script>
+  <script src="js/view-guide.js"></script>
+  <script src="js/view-progress.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
