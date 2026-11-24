@@ -197,7 +197,7 @@
     ["gaaye", "cow", "gaa-ay", "gaye|gai|gaay|gaae"],
     ["bhains", "buffalo", "b'hae(n)s", "bhens|bhainse"],
     ["bakri", "goat", "buk-ree", "bakree"],
-    ["sher", "lion / tiger", "shayr", "shair|sheir", "Not to be confused with she'r (a couplet of poetry), a different word that is often also written sher."],
+    ["sher", "lion / tiger", "shayr", "sheir", "Not to be confused with she'r (a couplet of poetry), a different word that is often also written sher."],
     ["haathi", "elephant", "haa-t'hee", "hathi"],
     ["bandar", "monkey", "bun-dur", "bundar"],
     ["oont", "camel", "oo(n)T", "unt|oont"],

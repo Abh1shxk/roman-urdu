@@ -8,14 +8,11 @@
   const ROUND = 20;
 
   function setOptions(sel) {
-    const due = App.dueWords().length;
-    const opts = [
-      ["due", "⏰ Due for review (" + due + ")"],
-      ["new", "🌱 New words"],
-      ["learning", "📚 Words I'm learning"],
-      ["all", "🌍 All categories"]
-    ].concat(App.categories.map(function (c) { return [c.id, c.icon + " " + c.name]; }));
-    return opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === sel ? " selected" : "") + '>' + esc(o[1]) + '</option>'; }).join("");
+    return App.scopeOptions(sel, [
+      ["due", "Due for review (" + App.dueWords().length + ")"],
+      ["new", "New words"],
+      ["learning", "Words I'm learning"]
+    ]);
   }
 
   function buildDeck(scope) {
@@ -35,7 +32,7 @@
       let scope = param || (App.dueWords().length ? "due" : "new");
       let deck = [], i = 0, flipped = false, knew = 0, again = 0, requeued = {};
 
-      el.innerHTML =
+      el.innerHTML = App.practiceSwitch("cards") +
         '<h1>Flashcards</h1>' +
         '<p class="lead">Say the answer in your head, flip the card, then be honest. Words you miss come back sooner; words you know wait longer.</p>' +
         '<div class="toolbar">' +
@@ -62,7 +59,8 @@
         deck = buildDeck(scope); i = 0; knew = 0; again = 0; requeued = {};
         if (!deck.length) {
           stage.innerHTML = '<div class="card empty"><h3>Nothing here right now</h3><p>' +
-            (scope === "due" ? "No words are due for review. Nice work!" : scope === "learning" ? "You haven't started any words yet." : "No words in this set.") +
+            (scope === "due" ? "No words are due for review. Nice work!" : scope === "learning" ? "You haven't started any words yet." :
+             scope === "saved" ? "You haven't saved any words yet. Tap the ☆ on any word card to save it." : "No words in this set.") +
             '</p><button class="btn btn-primary" type="button" id="go-new">Learn new words</button></div>';
           stage.querySelector("#go-new").addEventListener("click", function () { App.go("cards-new"); });
           return;

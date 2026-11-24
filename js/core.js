@@ -5,19 +5,28 @@
 
   /* ---------- Word index ---------- */
   App.categories = (window.URDU_DATA || []).map(function (c) {
+    const group = c.group || "everyday";
     const words = c.words.map(function (w, i) {
+      const ex = w[6] ? String(w[6]).split("|") : null;
       return {
         id: c.id + ":" + i,
         cat: c.id,
+        group: group,
         roman: w[0],
         english: w[1],
         sounds: w[2] || "",
         variants: w[3] ? w[3].split("|").filter(Boolean) : [],
-        note: w[4] || ""
+        note: w[4] || "",
+        plain: w[5] || "",                                  // everyday equivalent (pure Urdu words)
+        example: ex && ex[0] ? { ur: ex[0], en: ex[1] || "" } : null
       };
     });
-    return { id: c.id, name: c.name, icon: c.icon, blurb: c.blurb, words: words };
+    return { id: c.id, group: group, name: c.name, urdu: c.urdu || "", icon: c.icon, blurb: c.blurb, words: words };
   });
+  App.groups = {
+    everyday: App.categories.filter(function (c) { return c.group === "everyday"; }),
+    adabi: App.categories.filter(function (c) { return c.group === "adabi"; })
+  };
   App.words = [];
   App.byId = {};
   App.categories.forEach(function (c) {
@@ -31,7 +40,7 @@
   const INTERVALS = [0, 1, 2, 4, 8, 16, 32]; // days until next review per box
 
   function blank() {
-    return { words: {}, days: {}, quizzes: [], bestStreak: 0, settings: { goal: 15, theme: "auto" } };
+    return { words: {}, days: {}, quizzes: [], bestStreak: 0, saved: {}, settings: { goal: 15, theme: "auto" } };
   }
   function load() {
     try {
@@ -93,6 +102,7 @@
     Object.keys(b.days || {}).forEach(function (d) { out.days[d] = Math.max(out.days[d] || 0, b.days[d] || 0); });
     out.quizzes = ((b.quizzes || []).length > (a.quizzes || []).length ? b.quizzes : a.quizzes) || [];
     out.bestStreak = Math.max(a.bestStreak || 0, b.bestStreak || 0);
+    out.saved = Object.assign({}, a.saved || {}, b.saved || {});
     out.settings = Object.assign(blank().settings, a.settings, b.settings);
     return out;
   }
@@ -188,6 +198,14 @@
     else { s.manual = true; s.box = Math.max(s.box, BOX_LEARNED); s.due = addDays(App.today(), INTERVALS[s.box]); }
     App.progress.words[id] = s;
     App.save();
+  };
+  App.isSaved = function (id) { return !!(App.progress.saved && App.progress.saved[id]); };
+  App.toggleSaved = function (id) {
+    App.progress.saved = App.progress.saved || {};
+    if (App.progress.saved[id]) delete App.progress.saved[id];
+    else App.progress.saved[id] = 1;
+    App.save();
+    return App.isSaved(id);
   };
   App.learnedCount = function (list) {
     return (list || App.words).filter(function (w) { return App.isLearned(w.id); }).length;
@@ -310,6 +328,8 @@
     if (scope === "new") return App.words.filter(function (w) { return !App.isStarted(w.id); });
     if (scope === "learning") return App.words.filter(function (w) { return App.isStarted(w.id) && !App.isLearned(w.id); });
     if (scope === "learned") return App.words.filter(function (w) { return App.isLearned(w.id); });
+    if (scope === "saved") return App.words.filter(function (w) { return App.isSaved(w.id); });
+    if (scope === "everyday" || scope === "adabi") return App.words.filter(function (w) { return w.group === scope; });
     const c = App.cat(scope);
     return c ? c.words.slice() : App.words.slice();
   };
@@ -325,10 +345,89 @@
     if (/\(n\)/.test(s)) tips.push("(n) = say it through the nose");
     return tips;
   };
-  App.wordOfDay = function () {
-    const t = App.today();
+  App.wordOfDay = function (group) {
+    const t = App.today() + (group || "");
     let h = 0;
     for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) >>> 0;
-    return App.words[h % App.words.length];
+    const list = group ? App.words.filter(function (w) { return w.group === group; }) : App.words;
+    return list[h % list.length];
+  };
+
+  /* ---------- Dictionary search (English <-> Roman Urdu) ---------- */
+  const STOP = { to: 1, a: 1, an: 1, the: 1, of: 1, with: 1, for: 1, in: 1, on: 1, and: 1, or: 1, is: 1, it: 1, be: 1, someone: 1, something: 1 };
+  function tokensOf(w) {
+    if (w._tok) return w._tok;
+    const phrases = [], words = {};
+    const add = function (s) {
+      const n = App.normEnglish(s);
+      if (!n) return;
+      phrases.push(n);
+      n.split(" ").forEach(function (t) { if (t.length > 1 && !STOP[t]) words[t] = 1; });
+    };
+    w.english.replace(/\([^)]*\)/g, " ").split(/[\/;,]/).forEach(add);
+    (w.english.match(/\(([^)]*)\)/g) || []).forEach(function (m) { m.slice(1, -1).split(/[\/;,]/).forEach(function (p) {
+      const n = App.normEnglish(p);
+      if (n && !/^(lit|said|with|to a|polite|formal|male|informal|very|everyday|literary|a woman|poetic)/.test(n)) n.split(" ").forEach(function (t) { if (t.length > 2 && !STOP[t]) words[t] = 1; });
+    }); });
+    w._tok = { phrases: phrases, words: Object.keys(words), roman: [App.normRoman(w.roman)].concat(w.variants.map(App.normRoman)) };
+    return w._tok;
+  }
+  // Score every word against a query, both ways. Returns {en: [...], ur: [...]} of {w, score}, best first:
+  // en = the query read as English (English -> Urdu), ur = the query read as Roman Urdu (Urdu -> English).
+  App.search = function (query, limit) {
+    const qEn = App.normEnglish(query).replace(/\?$/, "");
+    const qUr = App.normRoman(query);
+    const res = { en: [], ur: [] };
+    if (!qEn && !qUr) return res;
+    const out = [];
+    App.words.forEach(function (w) {
+      const t = tokensOf(w);
+      let en = 0, ur = 0;
+      if (qEn) {
+        t.phrases.forEach(function (p) {
+          if (p === qEn) en = Math.max(en, 100);
+          else if (qEn.length >= 3 && p.indexOf(qEn) === 0) en = Math.max(en, 70);
+        });
+        t.words.forEach(function (x) {
+          if (x === qEn) en = Math.max(en, 85);
+          else if (qEn.length >= 3 && x.indexOf(qEn) === 0) en = Math.max(en, 55);
+          else if (qEn.length >= 4 && Math.abs(x.length - qEn.length) <= 2 && App.lev(x, qEn) <= (qEn.length >= 7 ? 2 : 1)) en = Math.max(en, 40);
+        });
+        if (!en && qEn.length >= 4 && qEn.indexOf(" ") > 0 && t.phrases.some(function (p) { return p.indexOf(qEn) >= 0; })) en = 50;
+        if (en === 100 && App.normEnglish(w.english.replace(/\([^)]*\)/g, " ")) === qEn) en = 101; // the whole meaning is the query
+      }
+      if (qUr && qUr.length >= 2) {
+        t.roman.forEach(function (r) {
+          if (r === qUr) ur = Math.max(ur, 98);
+          else if (qUr.length >= 3 && r.indexOf(qUr) === 0) ur = Math.max(ur, 60);
+          else if (qUr.length >= 4 && Math.abs(r.length - qUr.length) <= 2 && App.lev(r, qUr) <= (qUr.length >= 7 ? 2 : 1)) ur = Math.max(ur, 38);
+        });
+      }
+      if (en || ur) out.push({ w: w, en: en, ur: ur });
+    });
+    const strongEn = out.some(function (r) { return r.en >= 85; });
+    const exactUr = out.some(function (r) { return r.ur >= 98; });
+    const byScore = function (a, b) { return b.score - a.score || (a.w.group === "adabi") - (b.w.group === "adabi") || a.w.roman.length - b.w.roman.length; };
+    res.en = out.filter(function (r) { return r.en > (strongEn || exactUr ? 40 : 0); })
+      .map(function (r) { return { w: r.w, score: r.en }; }).sort(byScore).slice(0, limit || 30);
+    res.ur = out.filter(function (r) { return r.ur > (exactUr ? 59 : 0); })
+      .map(function (r) { return { w: r.w, score: r.ur }; }).sort(byScore).slice(0, 8);
+    return res;
+  };
+  // Closest English meanings, for "did you mean" when nothing matches.
+  App.suggest = function (query) {
+    const q = App.normEnglish(query);
+    if (q.length < 3) return [];
+    const seen = {}, best = [];
+    App.words.forEach(function (w) {
+      tokensOf(w).words.forEach(function (x) {
+        if (seen[x]) return;
+        seen[x] = 1;
+        const d = App.lev(x, q);
+        if (d <= 3) best.push({ x: x, d: d });
+      });
+    });
+    best.sort(function (a, b) { return a.d - b.d; });
+    return best.slice(0, 5).map(function (b) { return b.x; });
   };
 })();

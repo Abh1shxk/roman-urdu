@@ -29,7 +29,7 @@
   App.views.quiz = {
     render: function (el, param) {
       if (param === "custom" && App.pendingQuizIds) ui.scope = "custom";
-      else if (param && (App.cat(param) || ["all", "due", "learning", "learned"].indexOf(param) >= 0)) ui.scope = param;
+      else if (param && (App.cat(param) || ["all", "due", "learning", "learned", "saved", "everyday", "adabi"].indexOf(param) >= 0)) ui.scope = param;
       let qs = [], i = 0, score = 0, missed = [], answered = false;
 
       function scopeWords() {
@@ -38,15 +38,14 @@
       }
 
       function setup() {
-        const opts = [["all", "🌍 All words"], ["learning", "📚 Words I'm learning"], ["learned", "✅ Words I've learned"], ["due", "⏰ Due for review"]]
-          .concat(App.pendingQuizIds ? [["custom", "🃏 My last flashcard round"]] : [])
-          .concat(App.categories.map(function (c) { return [c.id, c.icon + " " + c.name]; }));
-        el.innerHTML =
+        const extra = (App.pendingQuizIds ? [["custom", "My last flashcard round"]] : [])
+          .concat([["learning", "Words I'm learning"], ["learned", "Words I've learned"], ["due", "Due for review"]]);
+        el.innerHTML = App.practiceSwitch("quiz") +
           '<h1>Quiz</h1>' +
           '<p class="lead">Test yourself both ways. When typing Roman Urdu, any common spelling counts: <b>bahut</b>, <b>bohat</b> and <b>bohot</b> are all right.</p>' +
           '<div class="card quiz-card">' +
             '<div class="setup-grid">' +
-              '<label class="field">Words<select id="s-scope">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === ui.scope ? " selected" : "") + '>' + esc(o[1]) + '</option>'; }).join("") + '</select></label>' +
+              '<label class="field">Words<select id="s-scope">' + App.scopeOptions(ui.scope, extra) + '</select></label>' +
               '<label class="field">Questions<select id="s-len">' + [10, 20, 30].map(function (n) { return '<option' + (n === ui.len ? " selected" : "") + '>' + n + '</option>'; }).join("") + '</select></label>' +
             '</div>' +
             '<div class="field" style="margin-bottom:8px">Direction</div>' +

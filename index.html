@@ -4,42 +4,78 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Roman Urdu</title>
-  <meta name="description" content="Learn Urdu written in English letters (Roman Urdu): vocabulary, flashcards, quizzes and a pronunciation guide. Works offline.">
-  <meta name="theme-color" content="#0d6b5c">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d6b5c'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' text-anchor='middle' fill='white'%3ERU%3C/text%3E%3C/svg%3E">
+  <meta name="description" content="Learn Urdu written in English letters (Roman Urdu): everyday and pure (adabi) Urdu words, an English-to-Urdu dictionary, flashcards, quizzes and a pronunciation guide.">
+  <meta name="theme-color" content="#0b7a68">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b7a68'/%3E%3Ctext x='32' y='43' font-family='Georgia,serif' font-size='30' font-weight='700' text-anchor='middle' fill='white'%3ERU%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/views.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
+  <div class="app">
+    <aside class="sidebar" aria-label="Main menu">
       <a class="brand" href="#home" aria-label="Roman Urdu home">
         <span class="brand-mark" aria-hidden="true">RU</span>
         <span class="brand-name">Roman Urdu<small>Urdu in English letters</small></span>
       </a>
-      <span class="stat-chip" title="Day streak"><span aria-hidden="true">🔥</span><span id="hdr-streak">0</span><span class="lbl">day streak</span></span>
-      <span class="stat-chip" title="Words learned"><span aria-hidden="true">✅</span><span id="hdr-learned">0</span><span class="lbl">learned</span></span>
-      <button class="icon-btn" id="theme-btn" type="button" title="Switch light / dark theme" aria-label="Switch light or dark theme">🌓</button>
-    </div>
-    <nav class="tabs" aria-label="Sections">
-      <button class="tab" data-view="home" type="button"><span class="ti" aria-hidden="true">🏠</span>Home</button>
-      <button class="tab" data-view="learn" type="button"><span class="ti" aria-hidden="true">📖</span>Words</button>
-      <button class="tab" data-view="cards" type="button"><span class="ti" aria-hidden="true">🃏</span>Flashcards</button>
-      <button class="tab" data-view="quiz" type="button"><span class="ti" aria-hidden="true">🎯</span>Quiz</button>
-      <button class="tab" data-view="guide" type="button"><span class="ti" aria-hidden="true">🔤</span>Sounds</button>
-      <button class="tab" data-view="progress" type="button"><span class="ti" aria-hidden="true">📈</span>Progress</button>
-    </nav>
-  </header>
+      <nav class="side-nav" aria-label="Sections">
+        <button class="nav-item" data-view="home" type="button"><span data-icon="home"></span>Home</button>
+        <button class="nav-item" data-view="translate" type="button"><span data-icon="search"></span>Search</button>
+        <div class="side-label">Learn</div>
+        <button class="nav-item" data-view="learn" type="button"><span data-icon="book"></span>Everyday words</button>
+        <button class="nav-item" data-view="adabi" type="button"><span data-icon="feather"></span>Pure Urdu<span class="new">NEW</span></button>
+        <button class="nav-item" data-view="guide" type="button"><span data-icon="type"></span>Sounds guide</button>
+        <div class="side-label">Practise</div>
+        <button class="nav-item" data-view="cards" type="button"><span data-icon="layers"></span>Flashcards</button>
+        <button class="nav-item" data-view="quiz" type="button"><span data-icon="target"></span>Quiz</button>
+        <button class="nav-item" data-view="progress" type="button"><span data-icon="chart"></span>Progress</button>
+      </nav>
+      <div class="side-foot">
+        <div class="side-stats">
+          <div class="side-stat"><b class="js-streak">0</b><span>day streak</span></div>
+          <div class="side-stat"><b class="js-learned">0</b><span>learned</span></div>
+        </div>
+        <button class="btn js-theme" type="button"><span data-icon="moon"></span><span class="js-theme-label">Theme: auto</span></button>
+      </div>
+    </aside>
 
-  <main id="view" tabindex="-1"></main>
+    <div class="main-col">
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="Roman Urdu home">
+          <span class="brand-mark" aria-hidden="true">RU</span>
+          <span class="brand-name">Roman Urdu</span>
+        </a>
+        <a class="stat-chip" href="#progress" title="Day streak: open progress"><span class="flame" data-icon="flame"></span><span class="js-streak">0</span><span class="lbl">days</span></a>
+        <a class="icon-btn" href="#guide" title="Sounds guide" aria-label="Sounds guide"><span data-icon="type"></span></a>
+        <button class="icon-btn js-theme" type="button" title="Switch theme" aria-label="Switch light or dark theme"><span data-icon="moon"></span></button>
+      </header>
+      <main id="view" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <nav class="tabbar" aria-label="Sections">
+    <button class="nav-item" data-view="home" type="button"><span data-icon="home"></span>Home</button>
+    <button class="nav-item" data-view="translate" type="button"><span data-icon="search"></span>Search</button>
+    <button class="nav-item" data-view="learn" type="button"><span data-icon="book"></span>Words</button>
+    <button class="nav-item" data-view="adabi" type="button"><span data-icon="feather"></span>Pure Urdu</button>
+    <button class="nav-item" data-view="cards" data-also="quiz" type="button"><span data-icon="layers"></span>Practice</button>
+  </nav>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="js/data-1.js"></script>
   <script src="js/data-2.js"></script>
   <script src="js/data-3.js"></script>
   <script src="js/data-4.js"></script>
+  <script src="js/data-5.js"></script>
+  <script src="js/data-6.js"></script>
   <script src="js/core.js"></script>
+  <script src="js/ui.js"></script>
   <script src="js/view-home.js"></script>
+  <script src="js/view-translate.js"></script>
   <script src="js/view-learn.js"></script>
+  <script src="js/view-adabi.js"></script>
   <script src="js/view-cards.js"></script>
   <script src="js/view-quiz.js"></script>
   <script src="js/view-guide.js"></script>

@@ -1,44 +1,48 @@
 # Roman Urdu: learn Urdu in English letters
 
-A small offline web app for learning Urdu written only in Latin letters (Roman Urdu), for example *love* = **mohabbat**.
+A small offline web app for learning Urdu written only in English letters (Roman Urdu), for example *love* = **mohabbat** and *remorse* = **nadaamat**.
 
-## How to open it
+**Online:** https://abh1shxk.github.io/roman-urdu/ opens in any browser, phones included.
 
-Double-click **`index.html`**. It opens in your browser (Edge, Chrome or Firefox). There's nothing to install, no internet is needed, and nothing is sent anywhere.
+## How to open it locally
 
-**Online:** https://abh1shxk.github.io/roman-urdu/ opens the same app in any browser, phones included.
+Double-click **`index.html`**. There's nothing to install and no internet needed. Without internet the app falls back to system fonts.
 
 ## What's inside
 
 | Screen | What it does |
 |---|---|
-| **Home** | Word of the day, daily goal ring, streak, quick start, all 16 categories with progress |
-| **Words** | Browse and search all 543 words and phrases. Each one shows its English meaning, a "sounds like" hint, other common spellings and usage notes. Mark words as learned. |
-| **Flashcards** | Spaced repetition: words you miss come back sooner, words you know wait longer. Works both ways (English → Urdu, Urdu → English). Keys: `Space` flips the card, `1` = didn't know, `2` = knew it. |
-| **Quiz** | English → Roman Urdu, Roman Urdu → English, or both; multiple choice, typed answers, or a mix. Typed answers accept common spelling variants (mohabbat / muhabbat, bahut / bohat / bohot, nahin / nahi, achha / acha, and so on), and there's an "I was right" button for anything else. |
-| **Sounds** | How the spellings map to sounds (aa / ee / oo, the two kinds of kh and gh, breathy h, curled t/d/r, nasal n, q), how to read the hints, quick grammar basics and common spelling variants |
-| **Progress** | Current and best streak, words learned, accuracy, the last 45 days of activity, progress per category, daily goal setting, export / import / reset |
+| **Home** | Search box, today's goal, a word of the day and a pure Urdu word of the day, quick actions, and every category with progress |
+| **Search** | Type an English word to get the Roman Urdu, or type Roman Urdu to get the English. Handles typos (beautifull) and spelling variants (mohabat). Shows pure Urdu synonyms and remembers recent searches. Press `/` anywhere to jump here. |
+| **Everyday words** | 543 words and phrases in 16 categories. Filter by not started, learning, learned or saved. Tap a card for full details. |
+| **Pure Urdu** | 163 literary (adabi) words of Persian and Arabic origin in 8 themes: Love & Longing, Sorrow & Regret, Nature & Sky, Soul & Faith, Poetry & Speech, Mind & Feeling, Character & Virtue, Time & Life. Each shows the everyday word it replaces (dukh → ranj), and many have an example sentence. |
+| **Flashcards / Quiz** | Spaced-repetition flashcards, and quizzes in both directions with multiple choice or typed answers. Typed answers accept common spellings (bahut, bohat, bohot). Practise any category, the whole pure Urdu set, or your saved words. |
+| **Sounds guide** | How the spellings map to sounds (aa / ee / oo, the two kinds of kh and gh, h for a puff of breath, curled t/d/r, nasal n, q), plus grammar basics |
+| **Progress** | Streak, words learned, accuracy, the last 45 days of activity, progress by category, daily goal, and export / import / reset |
 
-**Categories:** Greetings & Courtesy · Everyday Phrases · Pronouns & Questions · Numbers · Family & People · Colours · Food & Drink · Emotions & Feelings · Common Verbs · Days, Time & Seasons · The Body · Home & Things · Nature & Weather · Describing Words · Places & Directions · Animals
+Tap the ☆ on any word to save it, then practise saved words from Flashcards or Quiz.
 
-A word counts as **learned** once you get it right 3 times in a row, or when you mark it yourself.
+## Progress
 
-## Progress is saved in your browser
+Progress is saved in each browser (local storage). Use **Progress → Export progress** to back it up or move it to another device. The claude.ai version also syncs progress to the viewer's account.
 
-Progress is saved in the browser's local storage on each device. Clearing browser data erases it, so use **Progress → Export progress** to keep a backup or move it to another device. (On claude.ai, the app also syncs progress to the viewer's account.)
+## Updating the online version
 
-To update the online version, commit your changes and push to GitHub. GitHub Pages redeploys within a minute or two.
+Commit your changes and push to GitHub. GitHub Pages redeploys within a minute or two.
 
 ## Files
 
 ```
-index.html          the app (open this)
-css/style.css       styling, light and dark themes
-js/data-1..4.js     the vocabulary (easy to edit or extend)
-js/core.js          progress storage, spaced repetition, spelling-tolerant answer checking
-js/view-*.js        one file per screen
-js/main.js          navigation and theme
+index.html            the app (open this)
+css/style.css         theme tokens (light and dark), layout, shared components
+css/views.css         styles for each screen
+js/data-1..4.js       everyday vocabulary
+js/data-5..6.js       pure (adabi) Urdu vocabulary
+js/core.js            progress, spaced repetition, spelling-tolerant answer checking, dictionary search
+js/ui.js              icons, word cards, word detail sheet
+js/view-*.js          one file per screen
+js/main.js            navigation and theme
 ```
 
-To add words, append entries to a category in `js/data-*.js` in the form
-`["roman", "english meaning", "sounds-like hint", "other|spellings", "optional note"]`.
+To add words, append entries to a category in `js/data-*.js`:
+`["roman", "english meaning", "sounds-like hint", "other|spellings", "optional note"]`. Pure Urdu entries also take an everyday equivalent and an `"example|translation"`.
